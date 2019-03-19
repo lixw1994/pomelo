@@ -17,4 +17,4 @@ lib-cov/
 coverage.html
 .DS_Store
 .idea/*
-lib/
+template/

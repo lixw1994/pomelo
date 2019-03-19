@@ -1,8 +1,8 @@
 {
-    "name": "$",
+    "name": "template",
     "version": "0.0.1",
     "private": false,
     "dependencies": {
-        "pomelo": "#"
+        "pomelo": "git+ssh://git@github.com:lixw1994/pomelo.git#feature-lixw-test"
     }
 }
