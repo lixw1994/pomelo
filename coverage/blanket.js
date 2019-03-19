@@ -1,5 +1,5 @@
-var path = require('path');
-var srcDir = path.join(__dirname, '..', 'lib');
+let path = require('path');
+let srcDir = path.join(__dirname, '..', 'lib');
 
 require('blanket')({
   pattern: srcDir
