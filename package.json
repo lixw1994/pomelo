@@ -27,6 +27,7 @@
     "server"
   ],
   "dependencies": {
+    "@types/node": "^11.11.4",
     "async": "0.2.5",
     "cliff": "^0.1.10",
     "commander": "2.0.0",

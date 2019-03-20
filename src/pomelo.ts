@@ -1,43 +1,53 @@
-"use strict";
 /*!
  * Pomelo
  * Copyright(c) 2012 xiechengchao <xiecc@163.com>
  * MIT Licensed
  */
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const path = require("path");
-const application = require("./application");
-const events_1 = require("./util/events");
-class CPomelo {
+
+/**
+ * Module dependencies.
+ */
+import * as fs from 'fs';
+import * as path from 'path';
+import * as application from './application';
+import { evnets } from './util/events';
+import { TDick } from './interface/typedefine';
+import { IComponent } from './components/IComponent';
+import { IConnector } from './connectors/IConnector';
+import { IHandlerFilter, IRpcFilter } from './filters/IFilter';
+import { IPushScheduler } from './pushSchedulers/IPushScheduler';
+
+export class CPomelo {
+    app: any;
+
+    version: string = '0.0.1';
+
+    events = evnets;
+
+    components: TDick<IComponent> = {};
+
+    connectors: TDick<IConnector> = {};
+
+    filters: TDick<IHandlerFilter> = {};
+
+    rpcFilters: TDick<IRpcFilter> = {};
+
+    pushSchedulers: TDick<IPushScheduler> = {};
     constructor() {
-        this.version = '0.0.1';
-        this.events = events_1.evnets;
-        this.components = {};
-        this.connectors = {};
-        this.filters = {};
-        this.rpcFilters = {};
-        this.pushSchedulers = {};
-        this.createApp = function (opts) {
-            this.app = application;
-            this.app.init(opts);
-            return this.app;
-        };
         this.loadComponents();
         this.loadFilters();
         this.loadRpcFilters();
         this.loadConnectors();
         this.loadPushSchedulers();
     }
-    loadComponents() {
+
+    createApp = function (opts) {
+        this.app = application;
+        this.app.init(opts);
+        return this.app;
+    };
+
+    private loadComponents() {
         fs.readdirSync(__dirname + '/components').forEach((filename) => {
             if (!/\.js$/.test(filename)) {
                 return;
@@ -48,7 +58,8 @@ class CPomelo {
             Object.defineProperty(this, name, { get: _load });
         });
     }
-    loadFilters() {
+
+    private loadFilters() {
         fs.readdirSync(__dirname + '/filters/handler').forEach((filename) => {
             if (!/\.js$/.test(filename)) {
                 return;
@@ -59,7 +70,8 @@ class CPomelo {
             Object.defineProperty(this, name, { get: _load });
         });
     }
-    loadRpcFilters() {
+
+    private loadRpcFilters() {
         fs.readdirSync(__dirname + '/filters/rpc').forEach(function (filename) {
             if (!/\.js$/.test(filename)) {
                 return;
@@ -69,7 +81,8 @@ class CPomelo {
             Object.defineProperty(this.rpcFilters, name, { get: _load });
         });
     }
-    loadConnectors() {
+
+    private loadConnectors() {
         fs.readdirSync(__dirname + '/connectors').forEach(function (filename) {
             if (filename.includes('connector.js')) {
                 let name = path.basename(filename, '.js');
@@ -78,22 +91,23 @@ class CPomelo {
             }
         });
     }
-    loadPushSchedulers() {
+
+    private loadPushSchedulers() {
         Object.defineProperty(this.pushSchedulers, 'direct', { get: load.bind(null, './pushSchedulers/direct') });
         Object.defineProperty(this.pushSchedulers, 'buffer', { get: load.bind(null, './pushSchedulers/buffer') });
     }
 }
-exports.CPomelo = CPomelo;
+
 function loadSync(path, name) {
     if (name) {
         return require(path + name);
     }
     return require(path);
 }
-function load(path, name = '') {
-    return __awaiter(this, void 0, void 0, function* () {
-        let loadRes = yield Promise.resolve().then(() => require(`${path}${name}`));
-        return loadRes;
-    });
+
+async function load<T>(path: string, name: string = '') {
+    let loadRes: T = await import(`${path}${name}`);
+    return loadRes;
 }
-exports.default = new CPomelo();
+
+export default new CPomelo();
